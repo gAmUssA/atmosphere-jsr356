@@ -33,12 +33,6 @@ public class Jsr356WebSocketChat {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * Broadcast the returned value to all connected WenSocket.
-     * @param message
-     * @return
-     * @throws IOException
-     */
     @Broadcast("/chat")
     @WebSocketMessage
     public String onMessage(String message) throws IOException {

@@ -39,8 +39,4 @@ Client side, as simple as:
     request.onError = function(response) {
         ...
     };
-}```
-
-    subSocket = socket.subscribe(request);
-
 ```

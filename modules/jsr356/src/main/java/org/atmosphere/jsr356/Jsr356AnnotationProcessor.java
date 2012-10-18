@@ -16,14 +16,9 @@
 package org.atmosphere.jsr356;
 
 import eu.infomas.annotation.AnnotationDetector;
-import org.atmosphere.config.service.AtmosphereHandlerService;
-import org.atmosphere.config.service.WebSocketHandlerService;
 import org.atmosphere.cpr.AnnotationProcessor;
-import org.atmosphere.cpr.AtmosphereFramework;
-import org.atmosphere.cpr.BroadcastFilter;
 import org.atmosphere.cpr.DefaultAnnotationProcessor;
 import org.atmosphere.cpr.WebSocketProcessorFactory;
-import org.atmosphere.websocket.WebSocketHandler;
 import org.atmosphere.websocket.WebSocketProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

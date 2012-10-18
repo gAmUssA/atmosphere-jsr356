@@ -100,9 +100,7 @@
 
     <modules>
         <module>modules/jsr356</module>
-        <!--
-        <module>samples</module>
-        -->
+        <module>samples/chat</module>
     </modules>
 
     <build>

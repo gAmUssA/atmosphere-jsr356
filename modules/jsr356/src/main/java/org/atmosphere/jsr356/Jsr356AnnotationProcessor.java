@@ -52,7 +52,7 @@ public class Jsr356AnnotationProcessor extends DefaultAnnotationProcessor {
                 if (WebSocketEndpoint.class.equals(annotation)) {
 
                     try {
-                        Class<?> c = (Class<?>) cl.loadClass(className).newInstance();
+                        Object c = cl.loadClass(className).newInstance();
                         Jsr356WebSocketHandler w = new Jsr356WebSocketHandler(c);
 
                         WebSocketEndpoint a = c.getClass().getAnnotation(WebSocketEndpoint.class);

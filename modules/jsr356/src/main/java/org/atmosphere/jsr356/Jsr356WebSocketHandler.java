@@ -41,7 +41,7 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
     private final Method onByteMessageMethod;
     private final Method onErrorMethod;
 
-    protected Jsr356WebSocketHandler(Class<?> c) {
+    protected Jsr356WebSocketHandler(Object c) {
         this.object = c;
         this.onOpenMethod = populate(c, WebSocketOpen.class);
         this.onCloseMethod = populate(c, WebSocketClose.class);
@@ -52,17 +52,26 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
 
     @Override
     public void onByteMessage(WebSocket webSocket, byte[] data, int offset, int length) throws IOException {
-        invoke(onByteMessageMethod, data);
+        Object s = invoke(onByteMessageMethod, data);
+        if (s != null) {
+            webSocket.write(s.toString());
+        }
     }
 
     @Override
     public void onTextMessage(WebSocket webSocket, String data) throws IOException {
-        invoke(onTextMessageMethod, data);
+        Object s = invoke(onTextMessageMethod, data);
+        if (s != null) {
+            webSocket.write(s.toString());
+        }
     }
 
     @Override
     public void onOpen(WebSocket webSocket) throws IOException {
-        invoke(onOpenMethod, null);
+        Object s = invoke(onOpenMethod, null);
+        if (s != null) {
+            webSocket.write(s.toString());
+        }
     }
 
     @Override
@@ -75,8 +84,8 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
         invoke(onErrorMethod, t);
     }
 
-    private Method populate(Class<?> c, Class<? extends Annotation> annotation) {
-        for (Method m : c.getMethods()) {
+    private Method populate(Object c, Class<? extends Annotation> annotation) {
+        for (Method m : c.getClass().getMethods()) {
             if (m.isAnnotationPresent(annotation)) {
                 return m;
             }
@@ -84,16 +93,17 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
         return null;
     }
 
-    private void invoke(Method m, Object o) {
+    private Object invoke(Method m, Object o) {
         if (m != null) {
             try {
-                m.invoke(object, o == null ? new Object[]{} : new Object[]{o});
+                return m.invoke(object, o == null ? new Object[]{} : new Object[]{o});
             } catch (IllegalAccessException e) {
                 logger.debug("", e);
             } catch (InvocationTargetException e) {
                 logger.debug("", e);
             }
         }
+        return null;
     }
 
 }

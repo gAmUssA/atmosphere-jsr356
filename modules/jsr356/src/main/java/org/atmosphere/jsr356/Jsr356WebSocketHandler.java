@@ -15,6 +15,10 @@
  */
 package org.atmosphere.jsr356;
 
+import org.atmosphere.annotation.Broadcast;
+import org.atmosphere.cpr.Broadcaster;
+import org.atmosphere.cpr.BroadcasterFactory;
+import org.atmosphere.cpr.MetaBroadcaster;
 import org.atmosphere.websocket.WebSocket;
 import org.atmosphere.websocket.WebSocketHandler;
 import org.atmosphere.websocket.WebSocketProcessor;
@@ -40,6 +44,8 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
     private final Method onTextMessageMethod;
     private final Method onByteMessageMethod;
     private final Method onErrorMethod;
+    private Broadcaster broadcaster;
+    private String pathToBroadcast = null;
 
     protected Jsr356WebSocketHandler(Object c) {
         this.object = c;
@@ -48,12 +54,16 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
         this.onTextMessageMethod = populate(c, WebSocketMessage.class);
         this.onByteMessageMethod = null; //TODO:
         this.onErrorMethod = populate(c, WebSocketError.class);
+        scanForAtmosphereAnnotation(c);
     }
 
     @Override
     public void onByteMessage(WebSocket webSocket, byte[] data, int offset, int length) throws IOException {
         Object s = invoke(onByteMessageMethod, data);
-        if (s != null) {
+        if (broadcaster != null) {
+            broadcaster.broadcast(s);
+        } else if (s != null) {
+            // TODO: Inneficient.
             webSocket.write(s.toString());
         }
     }
@@ -61,7 +71,9 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
     @Override
     public void onTextMessage(WebSocket webSocket, String data) throws IOException {
         Object s = invoke(onTextMessageMethod, data);
-        if (s != null) {
+        if (broadcaster != null) {
+            broadcaster.broadcast(s);
+        } else if (s != null) {
             webSocket.write(s.toString());
         }
     }
@@ -71,6 +83,17 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
         Object s = invoke(onOpenMethod, null);
         if (s != null) {
             webSocket.write(s.toString());
+        }
+
+        // TODO: Improve
+        if (pathToBroadcast != null) {
+            synchronized (this) {
+                broadcaster = BroadcasterFactory.getDefault().lookup(pathToBroadcast, true);
+            }
+        }
+
+        if (broadcaster != null) {
+            broadcaster.addAtmosphereResource(webSocket.resource());
         }
     }
 
@@ -104,6 +127,15 @@ public class Jsr356WebSocketHandler implements WebSocketHandler {
             }
         }
         return null;
+    }
+
+    private void scanForAtmosphereAnnotation(Object c) {
+        for (Method m : c.getClass().getMethods()) {
+            if (m.isAnnotationPresent(Broadcast.class)) {
+                Broadcast b = m.getAnnotation(Broadcast.class);
+                pathToBroadcast = b.value();
+            }
+        }
     }
 
 }

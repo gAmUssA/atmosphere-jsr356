@@ -15,6 +15,7 @@
  */
 package org.atmosphere.samples.chat;
 
+import org.atmosphere.annotation.Broadcast;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.net.websocket.annotations.WebSocketEndpoint;
@@ -28,10 +29,17 @@ import java.util.Date;
  * @author Jeanfrancois Arcand
  */
 @WebSocketEndpoint("/chat")
-public class Jsr356WebSocketChat  {
+public class Jsr356WebSocketChat {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Broadcast the returned value to all connected WenSocket.
+     * @param message
+     * @return
+     * @throws IOException
+     */
+    @Broadcast("/chat")
     @WebSocketMessage
     public String onMessage(String message) throws IOException {
         return mapper.writeValueAsString(mapper.readValue(message, Data.class));

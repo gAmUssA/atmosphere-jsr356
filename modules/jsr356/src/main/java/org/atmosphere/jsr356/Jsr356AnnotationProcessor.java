@@ -50,7 +50,6 @@ public class Jsr356AnnotationProcessor extends DefaultAnnotationProcessor {
             public void reportTypeAnnotation(Class<? extends Annotation> annotation, String className) {
                 logger.info("Found Annotation in {} being scanned: {}", className, annotation);
                 if (WebSocketEndpoint.class.equals(annotation)) {
-
                     try {
                         Object c = cl.loadClass(className).newInstance();
                         Jsr356WebSocketHandler w = new Jsr356WebSocketHandler(c);
@@ -66,7 +65,7 @@ public class Jsr356AnnotationProcessor extends DefaultAnnotationProcessor {
                 }
             }
         };
-        logger.debug("Scanning JSR 356 annotations in {}", rootDir.getAbsolutePath());
+        logger.trace("Scanning JSR 356 annotations in {}", rootDir.getAbsolutePath());
         final AnnotationDetector cf = new AnnotationDetector(reporter);
         cf.detect(rootDir);
         return this;

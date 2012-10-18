@@ -17,8 +17,14 @@ package org.atmosphere.jsr356;
 
 import eu.infomas.annotation.AnnotationDetector;
 import org.atmosphere.config.service.AtmosphereHandlerService;
+import org.atmosphere.config.service.WebSocketHandlerService;
 import org.atmosphere.cpr.AnnotationProcessor;
+import org.atmosphere.cpr.AtmosphereFramework;
+import org.atmosphere.cpr.BroadcastFilter;
 import org.atmosphere.cpr.DefaultAnnotationProcessor;
+import org.atmosphere.cpr.WebSocketProcessorFactory;
+import org.atmosphere.websocket.WebSocketHandler;
+import org.atmosphere.websocket.WebSocketProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +56,18 @@ public class Jsr356AnnotationProcessor extends DefaultAnnotationProcessor {
                 logger.info("Found Annotation in {} being scanned: {}", className, annotation);
                 if (WebSocketEndpoint.class.equals(annotation)) {
 
+                    try {
+                        Class<?> c = (Class<?>) cl.loadClass(className).newInstance();
+                        Jsr356WebSocketHandler w = new Jsr356WebSocketHandler(c);
 
-
+                        WebSocketEndpoint a = c.getClass().getAnnotation(WebSocketEndpoint.class);
+                        String path = a.value();
+                        framework.initWebSocket();
+                        WebSocketProcessor p = WebSocketProcessorFactory.getDefault().getWebSocketProcessor(framework);
+                        p.registerWebSocketHandler(path, w);
+                    } catch (Throwable t) {
+                        logger.error("", t);
+                    }
                 }
             }
         };

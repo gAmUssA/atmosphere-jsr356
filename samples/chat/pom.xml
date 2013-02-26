@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>javax.net.websocket</groupId>
-            <artifactId>javax.net.websocket-api</artifactId>
+            <artifactId>javax.websocket-api</artifactId>
         </dependency>
         <dependency>
             <groupId>eu.infomas</groupId>

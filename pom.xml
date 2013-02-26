@@ -83,8 +83,8 @@
             </dependency>
             <dependency>
                 <groupId>javax.net.websocket</groupId>
-                <artifactId>javax.net.websocket-api</artifactId>
-                <version>1.0-b06</version>
+                <artifactId>javax.websocket-api</artifactId>
+                <version>1.0-b11</version>
             </dependency>
 
             <!-- Test -->

@@ -18,8 +18,10 @@ package org.atmosphere.samples.chat;
 import org.atmosphere.annotation.Broadcast;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.net.websocket.annotations.WebSocketEndpoint;
-import javax.net.websocket.annotations.WebSocketMessage;
+import javax.websocket.Endpoint;
+import javax.websocket.WebSocketMessage;
+import javax.websocket.server.DefaultServerConfiguration;
+import javax.websocket.server.WebSocketEndpoint;
 import java.io.IOException;
 import java.util.Date;
 
@@ -28,7 +30,7 @@ import java.util.Date;
  *
  * @author Jeanfrancois Arcand
  */
-@WebSocketEndpoint("/chat")
+@WebSocketEndpoint(value = "/chat", configuration = Jsr356WebSocketChat.DummyServerConfiguration.class)
 public class Jsr356WebSocketChat {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -79,5 +81,16 @@ public class Jsr356WebSocketChat {
             this.time = time;
         }
 
+    }
+
+    public class DummyServerConfiguration extends DefaultServerConfiguration {
+        /**
+         * Creates a server configuration with the given path
+         *
+         * @param path the URI or URI template.
+         */
+        public DummyServerConfiguration(Class<? extends Endpoint> endpointClass, String path) {
+            super(endpointClass, path);
+        }
     }
 }

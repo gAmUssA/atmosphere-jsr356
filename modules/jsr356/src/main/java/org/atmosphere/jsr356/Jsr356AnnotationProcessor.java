@@ -23,7 +23,7 @@ import org.atmosphere.websocket.WebSocketProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.websocket.annotations.WebSocketEndpoint;
+import javax.websocket.server.WebSocketEndpoint;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
